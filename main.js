@@ -4,6 +4,9 @@ const sepetBtn = document.querySelector('#sepet');
 const closeBtn = document.querySelector('#close');
 const modal = document.querySelector('.modal-wrapper');
 
+const fiyatSpan = document.querySelector('#fiyat');
+const modalList = document.getElementById('modal-list');
+
 document.addEventListener('DOMContentLoaded', () => {
   //callback > içerisinde fatklı fonksiyon çalıştıran fonksiyonlar
   fetchCategories();
@@ -59,9 +62,38 @@ function fetchProducts() {
 }
 
 // sepeti açma kapama
+const basket = [];
+let toplamfiyat = 0;
 
-sepetBtn.addEventListener('click', toggleSepet);
-closeBtn.addEventListener('click', toggleSepet);
+function listBasket() {
+  basket.forEach((eleman) => {
+    // SEPET ELEMANININ DİVİNİ OLUŞTURMA
+    const basketItem = document.createElement('div');
+    basketItem.classList.add('sepetItem');
+    basketItem.innerHTML = `
+            <h2>${eleman.name}</h2>
+            <h2>${eleman.price} $</h2>
+            <p>Miktar: ${eleman.amount}</p>
+    `;
+    modalList.appendChild(basketItem);
+    toplamfiyat += Number(eleman.price) * eleman.amount;
+  });
+  fiyatSpan.innerText = toplamfiyat;
+}
+
+sepetBtn.addEventListener('click', () => {
+  // sepeti açar
+  toggleSepet();
+  // sepete elemanları ekler
+  listBasket();
+});
+closeBtn.addEventListener('click', () => {
+  // sepet kapatır
+  toggleSepet();
+
+  // spet kapandığında listenin içini temizledik
+  modalList.innerHTML = '';
+});
 
 function toggleSepet() {
   modal.classList.toggle('active');
@@ -69,9 +101,9 @@ function toggleSepet() {
 
 // SEPETE ELEMAN EKLEME
 
-const basket = [];
-
 function sepeteEkle(param) {
+  // 3 == "3" > true
+  // 3 === "3"  > false
   const foundItem = basket.find((eleman) => eleman.id == param.id);
 
   if (foundItem) {
@@ -79,4 +111,6 @@ function sepeteEkle(param) {
   } else {
     basket.push(param);
   }
+
+  console.log(basket);
 }
